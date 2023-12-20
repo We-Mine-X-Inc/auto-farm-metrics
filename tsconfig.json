@@ -1,0 +1,52 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "exactOptionalPropertyTypes": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUnusedLocals": false, // TODO: change back after testing.
+    "strict": true,
+    "outDir": "./dist",
+    "baseUrl": "src",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "noEmit": false,
+    "typeRoots": ["node_modules/@types"],
+    "target": "es6",
+    "lib": [
+      "es6",
+      "esnext.asynciterable",
+      "DOM" // https://github.com/apollographql/apollo-client/issues/6376
+    ],
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "pretty": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": ["*"],
+      "@config": ["config"],
+      "@database/*": ["database/*"],
+      "@logger/*": ["logger/*"],
+      "@mailer/*": ["mailer/*"],
+      "@performance/*": ["performance/*"],
+      "@scheduler/*": ["scheduler/*"]
+    }
+  },
+  "include": ["src/*.ts", "src/**/*.ts", "src/**/*.json"],
+  "exclude": ["node_modules", "dist", "tests"]
+}
