@@ -18,8 +18,6 @@ export async function getAntminerInfo(
     hashrate: await getAntminerHashrate(minerIpAddress)(),
     isOnline: await isAntminerOnline(minerIpAddress),
   };
-  console.log("getAntminerInfo");
-  console.log(val);
   return val;
 }
 
@@ -58,8 +56,6 @@ export async function isAntminerOnline(minerIpAddress: string): Promise<any> {
     url: `http://${minerIpAddress}/cgi-bin/pools.cgi`,
   }).then((res: any) => {
     const currentPoolInfo = res.data["POOLS"][0];
-    console.log("isAntminerOnline");
-    console.log(res.data);
     return currentPoolInfo.status == "Alive" && currentPoolInfo.priority == 0;
   });
 }

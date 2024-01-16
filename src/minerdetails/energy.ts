@@ -11,6 +11,7 @@ export async function getEnergyTotal(friendlyMinerId: string) {
     emqxConnection.on("message", (topic, payload) => {
       if (topic.includes(friendlyMinerId)) {
         const jsonPayload = JSON.parse(payload.toString());
+        emqxConnection.end();
         resolve(jsonPayload[ENERGY_TOTAL_FIELD][ENERGY_TOTAL_SUBFIELD_TOTAL]);
       }
     });

@@ -14,8 +14,8 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
-    "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only auto_farm_configurations",
-    "start": "node dist/app.js",
+    "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only auto_farm_metrics_proc_prod",
+    "start": "node dist/execute_jobs.js",
     "test": "jest --config jest.config.js"
   },
   "repository": {

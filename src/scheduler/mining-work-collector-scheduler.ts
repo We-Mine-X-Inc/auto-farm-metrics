@@ -65,27 +65,34 @@ class MiningWorkCollectorScheduler {
       });
 
       const timeStamp = new Date().toISOString();
-      return await Promise.all<MinerDetails[]>(
+      return await Promise.allSettled<MinerDetails[]>(
         miners.map(async (miner: HostedMiner) => {
           const minerDetails = await getMinerDetails({
             API: miner.API,
             ipAddress: miner.ipAddress,
             friendlyMinerId: miner.friendlyMinerId,
           });
-          console.log("minerDetails");
-          console.log(minerDetails);
-          // const client = await graphqlClients[FARM_METRICS_APP_ID as string]();
-          // await client.mutate({
-          //   mutation: insertMiningWork(WEMINE_NODE_ENV),
-          //   variables: {
-          //     timeISOString: timeStamp,
-          //     hashrate: minerDetails.hashrate,
-          //     isOnline: minerDetails.isOnline,
-          //     totalEnergyConsumption: minerDetails.totalEnergyConsumption,
-          //     friendlyPoolId: minerDetails.friendlyPoolId,
-          //     friendlyMinerId: miner.friendlyMinerId,
-          //   },
-          // });
+
+          if (!minerDetails.friendlyPoolId || !miner.friendlyMinerId) {
+            return "Miner unavailable for retrieving the active pool's friendly id.";
+          }
+
+          const miningWork = {
+            time: timeStamp,
+            hashRate: minerDetails.hashrate,
+            isOnline: minerDetails.isOnline,
+            totalEnergyConsumption: minerDetails.totalEnergyConsumption,
+            poolByFriendlyId: { link: minerDetails.friendlyPoolId },
+            minerByFriendlyId: { link: miner.friendlyMinerId },
+          };
+
+          const client = await graphqlClients[FARM_METRICS_APP_ID as string]();
+          await client.mutate({
+            mutation: insertMiningWork({
+              env: WEMINE_NODE_ENV,
+              data: miningWork,
+            }),
+          });
           return minerDetails;
         })
       );
@@ -100,7 +107,6 @@ class MiningWorkCollectorScheduler {
     await this.scheduler.start();
     await this.scheduler.every(
       ONE_HOUR_IN_MILLIS,
-      // 5 * 1000,
       JOB_NAMES.COLLECT_MINING_WORK
     );
     this.isSchedulerStarted = true;

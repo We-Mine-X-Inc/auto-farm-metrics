@@ -13,14 +13,11 @@ export async function getMinerDetails(
   minerInfo: MinerInfo
 ): Promise<MinerDetails> {
   const minerOperationalInfo = await getOperationalInfo(minerInfo);
-  console.log("minerOperationalInfo");
-  console.log(prettyFormat(minerOperationalInfo));
   const matchedGroups = FRIENDLY_POOL_ID_REGEX.exec(
-    "weminex.co_friendlyPoolId_friendlyMinerId"
-    // minerOperationalInfo.poolUser
-  );
-  const friendlyPoolId = !!matchedGroups?.groups
-    ? matchedGroups.groups["friendlyPoolId"]
+    minerOperationalInfo.poolUser
+  )?.groups;
+  const friendlyPoolId = matchedGroups
+    ? matchedGroups["friendlyPoolId"]
     : "Failed to fetch pool id.";
   return await getEnergyTotal(minerInfo.friendlyMinerId).then(
     (totalEnergyConsumption) => {
@@ -39,7 +36,6 @@ async function getOperationalInfo(
 ): Promise<MinerOperationalInfo> {
   switch (minerInfo.API) {
     case MinerApiType.ANTMINER:
-      console.log("Antminer");
       return await getAntminerInfo(minerInfo.ipAddress);
     case MinerApiType.BRAIINS:
       return await getBraiinsInfo(minerInfo.ipAddress);
