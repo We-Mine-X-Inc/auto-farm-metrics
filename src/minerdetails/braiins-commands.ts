@@ -25,7 +25,7 @@ async function getBraiinsPool(minerIpAddress: string) {
         throw Error(`There's either no pool configuration or too many are set: 
         ${prettyFormat(poolConfiguration)}`);
       }
-      resolve(poolConfiguration[0]);
+      resolve(poolConfiguration[0].User);
     });
   });
 }

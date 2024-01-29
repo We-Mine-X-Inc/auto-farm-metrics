@@ -21,7 +21,12 @@ fi
 # Delete the job named $PM2_APP_NAME.
 npm list -g | grep pm2
 if [ $? -eq 0 ]; then
-    pm2 delete $PM2_APP_NAME
+    pm2 list
+    if [ $? -eq 0]; then
+        pm2 delete $PM2_APP_NAME
+    else
+        echo "$PM2_APP_NAME is not running."
+    fi
 else
     echo "PM2 does not exist."
     exit 1;

@@ -3,6 +3,8 @@ import { EMQX_HOST, EMQX_PASSWORD, EMQX_PORT, EMQX_USERNAME } from "@/config";
 import { IClientOptions, MqttClient, connect } from "mqtt";
 
 const ALL_STATS_TOPICS = "stat/#";
+const KEEP_ALIVE_SECS = 300;
+const CLIENT_ID = "AutoFarmMetricsJob";
 
 type EmqtConnectionParams = {
   port: number;
@@ -10,6 +12,8 @@ type EmqtConnectionParams = {
   username: string;
   password: string;
   protocol: string;
+  keepalive: number;
+  clientId: string;
 };
 
 export const getEmqxConnection = produceEmqxConnectionGetter();
@@ -24,6 +28,8 @@ function produceEmqxConnectionGetter() {
       port: parseInt(EMQX_PORT || ""),
       username: EMQX_USERNAME || "",
       password: EMQX_PASSWORD || "",
+      keepalive: KEEP_ALIVE_SECS,
+      clientId: CLIENT_ID,
     });
     emqxConnection.subscribe(
       [ALL_STATS_TOPICS],
@@ -34,6 +40,7 @@ function produceEmqxConnectionGetter() {
         }
       }
     );
+    emqxConnection.setMaxListeners(Infinity);
     return emqxConnection;
   };
 }

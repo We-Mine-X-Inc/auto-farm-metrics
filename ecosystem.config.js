@@ -8,7 +8,7 @@ module.exports = {
   apps: [
     {
       name: "auto_farm_metrics_proc_prod", // pm2 start App name
-      script: "./dist/app.js", // node
+      script: "./dist/execute_jobs.js", // node
       exec_mode: "cluster", // 'cluster' or 'fork'
       instance_var: "INSTANCE_ID", // instance variable
       instances: 1, // pm2 instance count
@@ -27,7 +27,7 @@ module.exports = {
     },
     {
       name: "auto_farm_metrics_proc_dev", // pm2 start App name
-      script: "./dist/app.js", // node
+      script: "./dist/execute_jobs.js", // node
       exec_mode: "cluster", // 'cluster' or 'fork'
       instance_var: "INSTANCE_ID", // instance variable
       instances: 1, // pm2 instance count

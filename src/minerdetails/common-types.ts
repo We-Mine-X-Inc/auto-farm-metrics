@@ -13,8 +13,8 @@ export type MinerOperationalInfo = {
 };
 
 export type MinerDetails = {
-  friendlyPoolId: string;
-  hashrate: number;
+  friendlyPoolId: string | undefined;
+  hashrate: number | undefined;
   isOnline: boolean;
-  totalEnergyConsumption: number;
+  totalEnergyConsumption: number | undefined;
 };

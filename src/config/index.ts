@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { EnvironmentString, convertStringToEnum } from "wemine-common-utils";
-config({ path: `.env.${process.env["NODE_ENV"] || "development"}.local` });
+config({ path: `.env.${process.env["NODE_ENV"] || "production"}.local` });
 
 export const CREDENTIALS = process.env["CREDENTIALS"] === "true";
 

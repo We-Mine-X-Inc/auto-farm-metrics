@@ -47,6 +47,11 @@
       "@scheduler/*": ["scheduler/*"]
     }
   },
-  "include": ["src/*.ts", "src/**/*.ts", "src/**/*.json"],
+  "include": [
+    "src/*.ts",
+    "src/**/*.ts",
+    "src/**/*.json",
+    "local/calculation.ts"
+  ],
   "exclude": ["node_modules", "dist", "tests"]
 }

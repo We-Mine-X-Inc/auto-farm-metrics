@@ -13,22 +13,26 @@ export async function getMinerDetails(
   minerInfo: MinerInfo
 ): Promise<MinerDetails> {
   const minerOperationalInfo = await getOperationalInfo(minerInfo);
+
+  FRIENDLY_POOL_ID_REGEX.lastIndex = 0;
   const matchedGroups = FRIENDLY_POOL_ID_REGEX.exec(
     minerOperationalInfo.poolUser
   )?.groups;
   const friendlyPoolId = matchedGroups
     ? matchedGroups["friendlyPoolId"]
-    : "Failed to fetch pool id.";
-  return await getEnergyTotal(minerInfo.friendlyMinerId).then(
-    (totalEnergyConsumption) => {
-      return {
-        friendlyPoolId,
-        hashrate: minerOperationalInfo.hashrate,
-        isOnline: minerOperationalInfo.isOnline,
-        totalEnergyConsumption,
-      };
-    }
-  );
+    : undefined;
+  const hashrate = Number.isNaN(minerOperationalInfo.hashrate)
+    ? undefined
+    : minerOperationalInfo.hashrate;
+  const totalEnergyConsumption = await getEnergyTotal(minerInfo.friendlyMinerId)
+    .then((totalEnergyConsumption) => totalEnergyConsumption)
+    .catch((error) => undefined);
+  return {
+    friendlyPoolId,
+    hashrate,
+    isOnline: minerOperationalInfo.isOnline,
+    totalEnergyConsumption,
+  };
 }
 
 async function getOperationalInfo(

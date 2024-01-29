@@ -2,7 +2,7 @@ import { getEmqxConnection } from "@/iot/emqx-connection";
 
 const ENERGY_TOTAL_FIELD = "EnergyTotal";
 const ENERGY_TOTAL_SUBFIELD_TOTAL = "Total";
-const WAIT_TIME_FOR_ENERGY_RESPONSE = 5000; // 5 seconds
+const WAIT_TIME_FOR_ENERGY_RESPONSE = 300000; // 5 mins
 
 export async function getEnergyTotal(friendlyMinerId: string) {
   const emqxConnection = await getEmqxConnection();
@@ -11,7 +11,6 @@ export async function getEnergyTotal(friendlyMinerId: string) {
     emqxConnection.on("message", (topic, payload) => {
       if (topic.includes(friendlyMinerId)) {
         const jsonPayload = JSON.parse(payload.toString());
-        emqxConnection.end();
         resolve(jsonPayload[ENERGY_TOTAL_FIELD][ENERGY_TOTAL_SUBFIELD_TOTAL]);
       }
     });
@@ -19,7 +18,8 @@ export async function getEnergyTotal(friendlyMinerId: string) {
     // Publish MQTT message in order to trigger the above callback.
     emqxConnection.publish(
       `cmnd/pow_elite_${friendlyMinerId}_topic/EnergyTotal`,
-      ""
+      "",
+      { qos: 1 }
     );
 
     setTimeout(

@@ -17,6 +17,7 @@ import { getMinerDetails } from "@/minerdetails/miner-details";
 import { MinerDetails } from "@/minerdetails/common-types";
 import { defaultDbOptions } from "@/database/clients/mongoose";
 import { HostedMiner } from "wemine-apis";
+import { getHostedMinersRpc } from "@/database/rpcs/getHostedMiners";
 
 const JOB_NAMES = {
   COLLECT_MINING_WORK: "Collect Mining Work",
@@ -56,33 +57,30 @@ class MiningWorkCollectorScheduler {
 
   private loadMiningWorkCollectorTask() {
     this.scheduler.define(JOB_NAMES.COLLECT_MINING_WORK, async (job) => {
-      const client = await graphqlClients[FARM_MGMT_APP_ID as string]();
-
-      const {
-        data: { hostedminerDevs: miners },
-      } = await client.query({
-        query: getHostedMiners({ env: WEMINE_NODE_ENV, query: {} }),
+      const miners = await getHostedMinersRpc({
+        clientPromise: graphqlClients[FARM_MGMT_APP_ID as string](),
       });
 
+      type minerDetailsFetchRespType = MinerDetails | string | null;
       const timeStamp = new Date().toISOString();
-      return await Promise.allSettled<MinerDetails[]>(
+      return await Promise.allSettled<minerDetailsFetchRespType>(
         miners.map(async (miner: HostedMiner) => {
           const minerDetails = await getMinerDetails({
             API: miner.API,
             ipAddress: miner.ipAddress,
             friendlyMinerId: miner.friendlyMinerId,
+          }).catch((error) => {
+            return null;
           });
-
-          if (!minerDetails.friendlyPoolId || !miner.friendlyMinerId) {
-            return "Miner unavailable for retrieving the active pool's friendly id.";
-          }
 
           const miningWork = {
             time: timeStamp,
-            hashRate: minerDetails.hashrate,
-            isOnline: minerDetails.isOnline,
-            totalEnergyConsumption: minerDetails.totalEnergyConsumption,
-            poolByFriendlyId: { link: minerDetails.friendlyPoolId },
+            hashRate: minerDetails?.hashrate,
+            isOnline: minerDetails?.isOnline,
+            totalEnergyConsumption: minerDetails?.totalEnergyConsumption,
+            poolByFriendlyId: minerDetails?.friendlyPoolId
+              ? { link: minerDetails.friendlyPoolId }
+              : undefined,
             minerByFriendlyId: { link: miner.friendlyMinerId },
           };
 

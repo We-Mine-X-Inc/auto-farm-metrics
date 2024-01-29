@@ -6,8 +6,8 @@ export NVM_DIR="$HOME/.nvm"
 
 # Parameters to be set before pushing the deployment to Github.
 USER=ubuntu
-VERSION_SUFFIX=1
-LAUNCH_ENV=prod
+VERSION_SUFFIX=2
+LAUNCH_ENV=production
 APP_DIR=auto_farm_metrics
 SHOULD_START_SERVER=false
 
@@ -15,7 +15,7 @@ SHOULD_START_SERVER=false
 INITIAL_PUSH_LOCATION=/home/$USER/applications/$APP_DIR
 COMPOSITES_DIR=all-composites
 COMPOSITES_ENV_DIR=/home/$USER/applications/$COMPOSITES_DIR/$LAUNCH_ENV/$APP_DIR/$VERSION_SUFFIX
-CONFIG_LOCATION=/home/$USER/applications/configs/.env.$LAUNCH_ENV.local
+CONFIG_LOCATION=/home/$USER/applications/configs/$APP_DIR/.env.$LAUNCH_ENV.local
 
 # Move initially uploaded content to destination folder.
 mkdir -p $COMPOSITES_ENV_DIR

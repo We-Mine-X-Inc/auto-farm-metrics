@@ -21,14 +21,19 @@ async function loginToMiner(ipAddress: string): Promise<SessionInfo> {
 }
 
 export async function getGoldshellInfo(minerIpAddress: string): Promise<any> {
-  const sessionInfo = await loginToMiner(minerIpAddress);
-  const poolStatus = await getGoldshellPoolStatus(sessionInfo);
-  const hashrate = await getGoldshellHashRate(sessionInfo);
-  return {
-    poolUser: poolStatus.poolUser,
-    isOnline: poolStatus.isOnline,
-    hashrate,
-  };
+  return loginToMiner(minerIpAddress)
+    .then(async (sessionInfo) => {
+      const poolStatus = await getGoldshellPoolStatus(sessionInfo);
+      const hashrate = await getGoldshellHashRate(sessionInfo);
+      return {
+        poolUser: poolStatus.poolUser,
+        isOnline: poolStatus.isOnline,
+        hashrate,
+      };
+    })
+    .catch(() => {
+      return { poolUser: "Pool not found.", isOnline: false, hashrate: NaN };
+    });
 }
 
 async function getGoldshellPoolStatus(sessionInfo: SessionInfo) {
@@ -36,13 +41,18 @@ async function getGoldshellPoolStatus(sessionInfo: SessionInfo) {
     method: "get",
     url: `http://${sessionInfo.ipAddress}/mcb/pools`,
     headers: getRequestHeaders(sessionInfo.authToken),
-  }).then((res: any) => {
-    const currentPoolInfo = res.data[0];
-    return {
-      poolUser: currentPoolInfo.user,
-      isOnline: currentPoolInfo.active && currentPoolInfo["pool-priority"] == 0,
-    };
-  });
+  })
+    .then((res: any) => {
+      const currentPoolInfo = res.data[0];
+      return {
+        poolUser: currentPoolInfo.user,
+        isOnline:
+          currentPoolInfo.active && currentPoolInfo["pool-priority"] == 0,
+      };
+    })
+    .catch(() => {
+      return { poolUser: "Pool not found.", isOnline: false };
+    });
 }
 
 export async function getGoldshellHashRate(sessionInfo: SessionInfo) {
@@ -50,16 +60,18 @@ export async function getGoldshellHashRate(sessionInfo: SessionInfo) {
     method: "get",
     url: `http://${sessionInfo.ipAddress}/mcb/cgminer?cgminercmd=devs`,
     headers: getRequestHeaders(sessionInfo.authToken),
-  }).then((res: any) => {
-    const chipStats = res.data["data"];
-    const chipHashRates = chipStats.map(
-      (chipStat: any) => chipStat["hashrate"]
-    );
-    return chipHashRates.reduce(
-      (partialSum: number, a: number) => partialSum + a,
-      0
-    );
-  });
+  })
+    .then((res: any) => {
+      const chipStats = res.data["data"];
+      const chipHashRates = chipStats.map(
+        (chipStat: any) => chipStat["hashrate"]
+      );
+      return chipHashRates.reduce(
+        (partialSum: number, a: number) => partialSum + a,
+        0
+      );
+    })
+    .catch(() => NaN);
 }
 
 function getRequestHeaders(authToken: string) {
