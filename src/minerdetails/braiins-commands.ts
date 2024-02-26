@@ -1,12 +1,14 @@
 import { format as prettyFormat } from "pretty-format";
 import { MinerOperationalInfo } from "./common-types";
+import { GIGA_TO_TERA_HASHRATE_FACTOR } from "wemine-common-utils";
 const { exec } = require("child_process");
 
 export async function getBraiinsInfo(
   minerIpAddress: string
 ): Promise<MinerOperationalInfo> {
   const poolUser = await getBraiinsPool(minerIpAddress);
-  const hashrate = await getBraiinsHashRate(minerIpAddress);
+  const hashrate =
+    (await getBraiinsHashRate(minerIpAddress)) / GIGA_TO_TERA_HASHRATE_FACTOR;
   return { poolUser, hashrate, isOnline: hashrate > 0 };
 }
 
@@ -36,7 +38,7 @@ export async function getBraiinsHashRate(minerIpAddress: string) {
   return new Promise<number>((resolve) => {
     exec(getSummaryCommand, (error: any, stdout: any, stderr: any) => {
       const minerStats = JSON.parse(stdout);
-      resolve(parseFloat(minerStats["MHS 5s"]));
+      resolve(parseFloat(minerStats["SUMMARY"][0]["MHS 5s"]));
     });
   });
 }
