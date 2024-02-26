@@ -4,7 +4,6 @@ import { getBraiinsInfo } from "./braiins-commands";
 import { getEnergyTotal } from "./energy";
 import { MinerDetails, MinerInfo, MinerOperationalInfo } from "./common-types";
 import { getGoldshellInfo } from "./goldshell-commands";
-import { format as prettyFormat } from "pretty-format"; //TODO: Remove
 
 const FRIENDLY_POOL_ID_REGEX =
   /(?:\w+)(?:\+\w+)?\.(co_fee|co|cl)_(?<friendlyPoolId>\w+)_(?<friendlyMinerId>\w+)/g;
