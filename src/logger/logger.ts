@@ -9,6 +9,6 @@ if (!existsSync(logDir)) {
   mkdirSync(logDir);
 }
 
-const logger = createLogger({ logDir, envName: NODE_ENV || "dev" });
+const logger = createLogger({ logDir, envName: NODE_ENV || "development" });
 
 export { logger };

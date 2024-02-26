@@ -9,7 +9,6 @@ import {
 import {
   ONE_HOUR_IN_MILLIS,
   agendaSchedulerManager,
-  getHostedMiners,
   insertMiningWork,
 } from "wemine-common-utils";
 import { graphqlClients } from "@/database/clients/graphql";

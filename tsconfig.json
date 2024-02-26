@@ -10,10 +10,10 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noPropertyAccessFromIndexSignature": true,
-    "noUnusedLocals": false, // TODO: change back after testing.
+    "noUnusedLocals": true,
     "strict": true,
     "outDir": "./dist",
-    "baseUrl": "src",
+    "baseUrl": "./",
     "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -38,13 +38,13 @@
     "pretty": true,
     "esModuleInterop": true,
     "paths": {
-      "@/*": ["*"],
-      "@config": ["config"],
-      "@database/*": ["database/*"],
-      "@logger/*": ["logger/*"],
-      "@mailer/*": ["mailer/*"],
-      "@performance/*": ["performance/*"],
-      "@scheduler/*": ["scheduler/*"]
+      "@/*": ["src/*"],
+      "@config": ["src/config"],
+      "@database/*": ["src/database/*"],
+      "@logger/*": ["src/logger/*"],
+      "@mailer/*": ["src/mailer/*"],
+      "@performance/*": ["src/performance/*"],
+      "@scheduler/*": ["src/scheduler/*"]
     }
   },
   "include": [
@@ -53,5 +53,5 @@
     "src/**/*.json",
     "local/calculation.ts"
   ],
-  "exclude": ["node_modules", "dist", "tests"]
+  "exclude": ["node_modules", "dist", "tests", "logs"]
 }

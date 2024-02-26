@@ -8,7 +8,7 @@ module.exports = {
   apps: [
     {
       name: "auto_farm_metrics_proc_prod", // pm2 start App name
-      script: "./dist/execute_jobs.js", // node
+      script: "./dist/src/execute_jobs.js", // node
       exec_mode: "cluster", // 'cluster' or 'fork'
       instance_var: "INSTANCE_ID", // instance variable
       instances: 1, // pm2 instance count
@@ -22,12 +22,12 @@ module.exports = {
       env: {
         // environment variable
         PORT: 5000,
-        NODE_ENV: "prod",
+        NODE_ENV: "production",
       },
     },
     {
       name: "auto_farm_metrics_proc_dev", // pm2 start App name
-      script: "./dist/execute_jobs.js", // node
+      script: "./dist/src/execute_jobs.js", // node
       exec_mode: "cluster", // 'cluster' or 'fork'
       instance_var: "INSTANCE_ID", // instance variable
       instances: 1, // pm2 instance count
@@ -41,7 +41,7 @@ module.exports = {
       env: {
         // environment variable
         PORT: 5000,
-        NODE_ENV: "dev",
+        NODE_ENV: "development",
       },
     },
   ],
@@ -51,7 +51,7 @@ module.exports = {
       host: "0.0.0.0",
       ref: "origin/master",
       repo: "git@github.com:repo.git",
-      path: "dist/server.js",
+      path: "dist/src/execute_jobs.js",
       "post-deploy":
         "npm install && npm run build && pm2 reload ecosystem.config.js --only prod",
     },
