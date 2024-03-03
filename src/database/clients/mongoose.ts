@@ -5,7 +5,7 @@ import {
   DB_PASSWORD,
   DB_CLUSTER,
   FARM_METRICS_DATABASE,
-} from "@config";
+} from "../../config";
 import { DatabaseConfigurations, buildConnections } from "wemine-common-utils";
 
 export const defaultDbOptions = {

@@ -1,4 +1,4 @@
-import { PerformanceRecord } from "@/performance/performance";
+import { PerformanceRecord } from "../performance/performance";
 import { json2csv } from "json-2-csv";
 import { createTransport } from "nodemailer";
 

@@ -3,7 +3,8 @@ import { MinerApiType } from "wemine-apis";
 export type MinerInfo = {
   API: MinerApiType;
   ipAddress: string;
-  friendlyMinerId: string;
+  friendlyPowerControllerId: string;
+  // friendlyMinerId: string;
 };
 
 export type MinerOperationalInfo = {

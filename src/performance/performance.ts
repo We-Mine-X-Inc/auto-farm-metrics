@@ -1,5 +1,5 @@
-import { FARM_METRICS_APP_ID, WEMINE_NODE_ENV } from "@/config";
-import { graphqlClients } from "@/database/clients/graphql";
+import { FARM_METRICS_APP_ID, WEMINE_NODE_ENV } from "../config";
+import { graphqlClients } from "../database/clients/graphql";
 import { Types } from "mongoose";
 import { MiningWorkHydrated } from "wemine-apis";
 import { getMiningWorkByTimeSpanQuery } from "wemine-common-utils";

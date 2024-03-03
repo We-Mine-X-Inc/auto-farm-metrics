@@ -23,7 +23,9 @@ export async function getMinerDetails(
   const hashrate = Number.isNaN(minerOperationalInfo.hashrate)
     ? undefined
     : minerOperationalInfo.hashrate;
-  const totalEnergyConsumption = await getEnergyTotal(minerInfo.friendlyMinerId)
+  const totalEnergyConsumption = await getEnergyTotal(
+    minerInfo.friendlyPowerControllerId
+  )
     .then((totalEnergyConsumption) => totalEnergyConsumption)
     .catch((error) => undefined);
   return {

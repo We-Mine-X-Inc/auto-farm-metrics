@@ -5,18 +5,18 @@ import {
   FARM_METRICS_APP_ID,
   FARM_MGMT_APP_ID,
   WEMINE_NODE_ENV,
-} from "@config";
+} from "../config";
 import {
   ONE_HOUR_IN_MILLIS,
   agendaSchedulerManager,
   insertMiningWork,
 } from "wemine-common-utils";
-import { graphqlClients } from "@/database/clients/graphql";
-import { getMinerDetails } from "@/minerdetails/miner-details";
-import { MinerDetails } from "@/minerdetails/common-types";
-import { defaultDbOptions } from "@/database/clients/mongoose";
+import { graphqlClients } from "../database/clients/graphql";
+import { getMinerDetails } from "../minerdetails/miner-details";
+import { MinerDetails } from "../minerdetails/common-types";
+import { defaultDbOptions } from "../database/clients/mongoose";
 import { HostedMiner } from "wemine-apis";
-import { getHostedMinersRpc } from "@/database/rpcs/getHostedMiners";
+import { getHostedMinersRpc } from "../database/rpcs/getHostedMiners";
 
 const JOB_NAMES = {
   COLLECT_MINING_WORK: "Collect Mining Work",
@@ -63,11 +63,13 @@ class MiningWorkCollectorScheduler {
       type minerDetailsFetchRespType = MinerDetails | string | null;
       const timeStamp = new Date().toISOString();
       return await Promise.allSettled<minerDetailsFetchRespType>(
-        miners.map(async (miner: HostedMiner) => {
+        miners.map(async (hostedMiner: HostedMiner) => {
           const minerDetails = await getMinerDetails({
-            API: miner.API,
-            ipAddress: miner.ipAddress,
-            friendlyMinerId: miner.friendlyMinerId,
+            API: hostedMiner.API,
+            ipAddress: hostedMiner.ipAddress,
+            friendlyPowerControllerId:
+              hostedMiner.powerController.managementMetadata
+                .friendlyPowerControllerId,
           }).catch((error) => {
             return null;
           });
@@ -80,7 +82,7 @@ class MiningWorkCollectorScheduler {
             poolByFriendlyId: minerDetails?.friendlyPoolId
               ? { link: minerDetails.friendlyPoolId }
               : undefined,
-            minerByFriendlyId: { link: miner.friendlyMinerId },
+            minerByFriendlyId: { link: hostedMiner.friendlyMinerId },
           };
 
           const client = await graphqlClients[FARM_METRICS_APP_ID as string]();

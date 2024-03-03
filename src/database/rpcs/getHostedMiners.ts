@@ -1,4 +1,4 @@
-import { WEMINE_NODE_ENV } from "@/config";
+import { WEMINE_NODE_ENV } from "../../config";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { HostedMiner } from "wemine-apis";
 import {

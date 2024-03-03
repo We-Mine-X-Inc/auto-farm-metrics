@@ -1,7 +1,7 @@
 import { createLogger } from "wemine-common-utils";
 import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
-import { LOG_DIR, NODE_ENV } from "@/config";
+import { LOG_DIR, NODE_ENV } from "../config";
 
 const logDir: string = join(__dirname, LOG_DIR || "");
 

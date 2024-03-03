@@ -1,4 +1,4 @@
-import { GLOBAL_CONFIGS_DATABASE } from "@/config";
+import { GLOBAL_CONFIGS_DATABASE } from "../../config";
 import { Schema, Document } from "mongoose";
 import { FarmMetricsAppAuths } from "wemine-apis";
 import { dbConnections } from "../clients/mongoose";

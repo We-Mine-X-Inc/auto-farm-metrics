@@ -1,5 +1,5 @@
 import { mqtt as awsMqtt } from "aws-iot-device-sdk-v2";
-import { EMQX_HOST, EMQX_PASSWORD, EMQX_PORT, EMQX_USERNAME } from "@/config";
+import { EMQX_HOST, EMQX_PASSWORD, EMQX_PORT, EMQX_USERNAME } from "../config";
 import { IClientOptions, MqttClient, connect } from "mqtt";
 
 const ALL_STATS_TOPICS = "stat/#";

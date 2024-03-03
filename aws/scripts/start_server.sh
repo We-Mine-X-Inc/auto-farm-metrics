@@ -6,7 +6,7 @@ export NVM_DIR="$HOME/.nvm"
 
 # Parameters to be set before pushing the deployment to Github.
 USER=ubuntu
-VERSION_SUFFIX=2
+VERSION_SUFFIX=3
 LAUNCH_ENV=production
 APP_DIR=auto_farm_metrics
 SHOULD_START_SERVER=false

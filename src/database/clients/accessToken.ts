@@ -1,4 +1,4 @@
-import { FARM_METRICS_APP_ID } from "@/config";
+import { FARM_METRICS_APP_ID } from "../../config";
 import { loadFarmMetricsAppAuthsModel } from "../models/farm-metrics-app-auths";
 import { loadFarmMgmtAppAuthsModel } from "../models/farm-mgmt-app-auths";
 

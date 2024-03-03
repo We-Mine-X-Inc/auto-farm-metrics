@@ -1,7 +1,7 @@
 import { Schema, Document } from "mongoose";
 import { FarmMgmtAppAuths } from "wemine-apis";
 import { dbConnections } from "../clients/mongoose";
-import { GLOBAL_CONFIGS_DATABASE } from "@/config";
+import { GLOBAL_CONFIGS_DATABASE } from "../../config";
 
 const farmMgmtAppAuthsSchema: Schema = new Schema({
   access_token: {
