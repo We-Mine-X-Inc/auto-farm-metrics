@@ -17,6 +17,7 @@ import { MinerDetails } from "../minerdetails/common-types";
 import { defaultDbOptions } from "../database/clients/mongoose";
 import { HostedMiner } from "wemine-apis";
 import { getHostedMinersRpc } from "../database/rpcs/getHostedMiners";
+import { logger } from "../logger/logger";
 
 const JOB_NAMES = {
   COLLECT_MINING_WORK: "Collect Mining Work",
@@ -58,6 +59,9 @@ class MiningWorkCollectorScheduler {
     this.scheduler.define(JOB_NAMES.COLLECT_MINING_WORK, async (job) => {
       const miners = await getHostedMinersRpc({
         clientPromise: graphqlClients[FARM_MGMT_APP_ID as string](),
+      }).catch((error) => {
+        logger.error(`Unable to fetch miners.`);
+        return [];
       });
 
       type minerDetailsFetchRespType = MinerDetails | string | null;
@@ -71,27 +75,40 @@ class MiningWorkCollectorScheduler {
               hostedMiner.powerController.managementMetadata
                 .friendlyPowerControllerId,
           }).catch((error) => {
+            logger.error(
+              `Failed to get miner details.
+               Miner IP: ${hostedMiner.ipAddress}.
+               ${error}`
+            );
             return null;
           });
 
           const miningWork = {
             time: timeStamp,
             hashRate: minerDetails?.hashrate,
-            isOnline: minerDetails?.isOnline,
+            isOperational: minerDetails?.isOperational,
             totalEnergyConsumption: minerDetails?.totalEnergyConsumption,
             poolByFriendlyId: minerDetails?.friendlyPoolId
               ? { link: minerDetails.friendlyPoolId }
               : undefined,
-            minerByFriendlyId: { link: hostedMiner.friendlyMinerId },
+            hostedMinerByFriendlyId: { link: hostedMiner.friendlyMinerId },
           };
 
           const client = await graphqlClients[FARM_METRICS_APP_ID as string]();
-          await client.mutate({
-            mutation: insertMiningWork({
-              env: WEMINE_NODE_ENV,
-              data: miningWork,
-            }),
-          });
+          await client
+            .mutate({
+              mutation: insertMiningWork({
+                env: WEMINE_NODE_ENV,
+                data: miningWork,
+              }),
+            })
+            .catch((error) => {
+              logger.error(
+                `Failed to insert mining work.
+                 Miner IP: ${hostedMiner.ipAddress}.
+                 ${error}`
+              );
+            });
           return minerDetails;
         })
       );

@@ -1,33 +1,54 @@
 import { getEmqxConnection } from "../iot/emqx-connection";
 
-const ENERGY_TOTAL_FIELD = "EnergyTotal";
-const ENERGY_TOTAL_SUBFIELD_TOTAL = "Total";
-const WAIT_TIME_FOR_ENERGY_RESPONSE = 300000; // 5 mins
+const STATUS_COMMAND_PAYLOAD = "8";
+const STATUS_FIELD = "StatusSNS";
+const ENERGY_SUBFIELD = "ENERGY";
+const POWER_SUBFIELD = "Power";
+const ENERGY_TOTAL_SUBFIELD = "Total";
+const WAIT_TIME_FOR_STATUS_RESPONSE = 300000; // 5 mins
 
-export async function getEnergyTotal(friendlyPowerControllerId: string) {
+type EnergyStats = { energyTotal: number; activePower: number };
+
+export async function getEnergyStats(friendlyPowerControllerId: string) {
   const emqxConnection = await getEmqxConnection();
-  return new Promise<number>((resolve, reject) => {
+  return new Promise<EnergyStats>((resolve, reject) => {
     // Register callback to handle capturing the given miner's energy total.
     emqxConnection.on("message", (topic, payload) => {
-      if (topic.includes(friendlyPowerControllerId)) {
-        const jsonPayload = JSON.parse(payload.toString());
-        if (jsonPayload[ENERGY_TOTAL_FIELD]) {
-          resolve(jsonPayload[ENERGY_TOTAL_FIELD][ENERGY_TOTAL_SUBFIELD_TOTAL]);
+      if (
+        topic.includes(friendlyPowerControllerId) &&
+        topic.includes("STATUS8")
+      ) {
+        let jsonPayload;
+        try {
+          jsonPayload = JSON.parse(payload.toString());
+
+          if (jsonPayload[STATUS_FIELD]) {
+            resolve({
+              energyTotal:
+                jsonPayload[STATUS_FIELD][ENERGY_SUBFIELD][
+                  ENERGY_TOTAL_SUBFIELD
+                ],
+              activePower:
+                jsonPayload[STATUS_FIELD][ENERGY_SUBFIELD][POWER_SUBFIELD],
+            });
+          }
+        } catch (error) {
+          reject(error);
         }
       }
     });
 
     // Publish MQTT message in order to trigger the above callback.
     emqxConnection.publish(
-      `cmnd/pow_elite_${friendlyPowerControllerId}_topic/EnergyTotal`,
-      "",
+      `cmnd/pow_elite_${friendlyPowerControllerId}_topic/Status`,
+      STATUS_COMMAND_PAYLOAD,
       { qos: 1 }
     );
 
     setTimeout(
       () =>
-        reject(`Timeout: No energy response for ${friendlyPowerControllerId}.`),
-      WAIT_TIME_FOR_ENERGY_RESPONSE
+        reject(`Timeout: No status response for ${friendlyPowerControllerId}.`),
+      WAIT_TIME_FOR_STATUS_RESPONSE
     );
   });
 }

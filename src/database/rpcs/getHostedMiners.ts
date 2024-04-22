@@ -8,12 +8,14 @@ import {
 
 export async function getHostedMinersRpc({
   clientPromise,
+  query = {},
 }: {
+  query?: Omit<any, "_id">;
   clientPromise: Promise<ApolloClient<NormalizedCacheObject>>;
 }) {
   const client = await clientPromise;
   const hostedMinersFetchResult = await client.query({
-    query: getHostedMiners({ env: WEMINE_NODE_ENV, query: {} }),
+    query: getHostedMiners({ env: WEMINE_NODE_ENV, query }),
   });
   const schemaName = getHostedMinerGraphSchemaName(WEMINE_NODE_ENV, {
     forManyDocuments: true,

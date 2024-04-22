@@ -4,7 +4,6 @@ export type MinerInfo = {
   API: MinerApiType;
   ipAddress: string;
   friendlyPowerControllerId: string;
-  // friendlyMinerId: string;
 };
 
 export type MinerOperationalInfo = {
@@ -16,6 +15,6 @@ export type MinerOperationalInfo = {
 export type MinerDetails = {
   friendlyPoolId: string | undefined;
   hashrate: number | undefined;
-  isOnline: boolean;
+  isOperational: boolean;
   totalEnergyConsumption: number | undefined;
 };

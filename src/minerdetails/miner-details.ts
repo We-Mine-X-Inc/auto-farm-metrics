@@ -1,12 +1,15 @@
 import { MinerApiType } from "wemine-apis";
 import { getAntminerInfo } from "./antminer-commands";
 import { getBraiinsInfo } from "./braiins-commands";
-import { getEnergyTotal } from "./energy";
+import { getEnergyStats } from "./energy";
 import { MinerDetails, MinerInfo, MinerOperationalInfo } from "./common-types";
 import { getGoldshellInfo } from "./goldshell-commands";
+import { logger } from "../logger/logger";
 
 const FRIENDLY_POOL_ID_REGEX =
-  /(?:\w+)(?:\+\w+)?\.(co_fee|co|cl)_(?<friendlyPoolId>\w+)_(?<friendlyMinerId>\w+)/g;
+  /(?:\w+)(?:\+\w+)?\.(co-fee|co|cl)-(?<friendlyPoolId>\w+)-(?<friendlyMinerId>\w+)/g;
+
+const UNHEALTHY_MINER_POWER_USAGE = 2000;
 
 export async function getMinerDetails(
   minerInfo: MinerInfo
@@ -23,16 +26,21 @@ export async function getMinerDetails(
   const hashrate = Number.isNaN(minerOperationalInfo.hashrate)
     ? undefined
     : minerOperationalInfo.hashrate;
-  const totalEnergyConsumption = await getEnergyTotal(
-    minerInfo.friendlyPowerControllerId
-  )
-    .then((totalEnergyConsumption) => totalEnergyConsumption)
-    .catch((error) => undefined);
+  const energyStats = await getEnergyStats(minerInfo.friendlyPowerControllerId)
+    .then(({ energyTotal, activePower }) => {
+      return { totalEnergyConsumption: energyTotal, activePower };
+    })
+    .catch((error) => {
+      logger.error(error);
+    });
   return {
     friendlyPoolId,
     hashrate,
-    isOnline: minerOperationalInfo.isOnline,
-    totalEnergyConsumption,
+    isOperational:
+      minerOperationalInfo.isOnline &&
+      !!energyStats &&
+      energyStats.activePower > UNHEALTHY_MINER_POWER_USAGE,
+    totalEnergyConsumption: energyStats?.totalEnergyConsumption,
   };
 }
 
